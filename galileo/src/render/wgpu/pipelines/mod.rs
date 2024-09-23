@@ -144,14 +144,17 @@ fn default_pipeline_descriptor<'a>(
     };
 
     RenderPipelineDescriptor {
+        cache: None,
         label: None,
         layout: Some(pipeline_layout),
         vertex: wgpu::VertexState {
+            compilation_options: Default::default(),
             module: shader,
             entry_point: "vs_main",
             buffers,
         },
         fragment: Some(wgpu::FragmentState {
+            compilation_options: Default::default(),
             module: shader,
             entry_point: "fs_main",
             targets,

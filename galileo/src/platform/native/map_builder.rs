@@ -19,7 +19,7 @@ impl MapBuilder {
             view: None,
             layers: vec![],
             event_handlers: vec![],
-            window: None,
+            window_attributes: None,
             event_loop: None,
         }
     }

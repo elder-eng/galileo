@@ -14,7 +14,7 @@ use std::sync::{Arc, RwLock};
 use winit::dpi::PhysicalSize;
 use winit::event::{Event, WindowEvent};
 use winit::event_loop::{ControlFlow, EventLoop};
-use winit::window::{Window, WindowBuilder};
+use winit::window::{Window, WindowAttributes};
 
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::wasm_bindgen;
@@ -152,7 +152,7 @@ pub struct MapBuilder {
     pub(crate) view: Option<MapView>,
     pub(crate) layers: Vec<Box<dyn Layer>>,
     pub(crate) event_handlers: Vec<Box<EventHandler>>,
-    pub(crate) window: Option<Window>,
+    pub(crate) window_attributes: Option<WindowAttributes>,
     pub(crate) event_loop: Option<EventLoop<()>>,
 }
 
@@ -172,17 +172,15 @@ impl MapBuilder {
 
         log::info!("Trying to get window");
 
-        let window = self.window.take().unwrap_or_else(|| {
-            WindowBuilder::new()
-                .with_inner_size(PhysicalSize {
+        let window_attributes: WindowAttributes =
+            self.window_attributes.take().unwrap_or_else(|| {
+                WindowAttributes::default().with_inner_size(PhysicalSize {
                     width: 1024,
                     height: 1024,
                 })
-                .build(&event_loop)
-                .expect("Failed to init a window.")
-        });
+            });
 
-        let window = Arc::new(window);
+        let window = Arc::new(event_loop.create_window(window_attributes).unwrap());
         let messenger = WinitMessenger::new(window.clone());
         let backend = Arc::new(RwLock::new(None));
 
@@ -205,8 +203,8 @@ impl MapBuilder {
     }
 
     /// Use the given window instead of creating a default one.
-    pub fn with_window(mut self, window: Window) -> Self {
-        self.window = Some(window);
+    pub fn with_window_attributes(mut self, attr: WindowAttributes) -> Self {
+        self.window_attributes = Some(attr);
         self
     }
 

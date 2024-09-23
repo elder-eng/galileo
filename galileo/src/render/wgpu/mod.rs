@@ -341,6 +341,7 @@ impl WgpuRenderer {
         adapter
             .request_device(
                 &wgpu::DeviceDescriptor {
+                    memory_hints: Default::default(),
                     required_features: wgpu::Features::empty(),
                     required_limits: if cfg!(any(target_arch = "wasm32", target_os = "android")) {
                         wgpu::Limits {
